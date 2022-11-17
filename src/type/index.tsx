@@ -1,5 +1,5 @@
-export { type ITrait } from "./trait.type";
-
-export { type IListedNFT } from "./nft.type";
-
-export { type IBoredApeYCState } from "./boredapeyc.type";
+export {
+  type INFTListState,
+  type IListedNFT,
+  type ITrait,
+} from "./nftlist.type";

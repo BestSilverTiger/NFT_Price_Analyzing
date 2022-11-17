@@ -3,12 +3,12 @@ import { apiConfig } from "../config/api.config";
 
 const localLink = apiConfig.localserver;
 
-const getListedBoredApeYC = async () => {
-  return Axios.get(`${localLink}/boredapeyc/getListedBoredApeYC`);
+const getListedNFTs = async (nfttype: string) => {
+  return Axios.get(`${localLink}/listednfts/${nfttype}`);
 };
 
 const ApiService = {
-  getListedBoredApeYC,
+  getListedNFTs,
 };
 
 export default ApiService;

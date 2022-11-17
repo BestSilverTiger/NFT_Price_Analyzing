@@ -1,8 +1,10 @@
 import { combineReducers } from "@reduxjs/toolkit";
-import boredapeycReducer from "./boredapeyc.reducer";
+import nftlistReducer from "./nftlist.reducer";
+import commonReducer from "./common.reducer";
 
 const MainReducer = combineReducers({
-  boredapeyc: boredapeycReducer,
+  nftlist: nftlistReducer,
+  common: commonReducer,
 });
 
 export default MainReducer;
