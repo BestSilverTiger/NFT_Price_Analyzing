@@ -1,4 +1,5 @@
-@import '~antd/dist/antd.css';
+@import '~antd/dist/antd.dark.css'; 
+
 
 #components-layout-demo-fixed-sider .logo {
   height: 32px;
@@ -7,4 +8,8 @@
 }
 .site-layout .site-layout-background {
   background: #fff;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
 }
