@@ -34,12 +34,7 @@ const NFTModal: React.FC = () => {
   const [highestPrice, setHighestPrice] = useState(0);
 
   const chartConfig = {
-    data: [
-      {
-        date: "asdf",
-        price: selectedNFT,
-      },
-    ],
+    data: priceHistory,
     xField: "date",
     yField: "price",
     label: {},
