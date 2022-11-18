@@ -1,11 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { ICommonState } from "../type/common.type";
+import { ICommonState } from "../type";
 import { RootState } from "../store";
 
 let initialState: ICommonState = {
   nfttype: "boredapeyc",
   currentPage: 1,
+  nftModalOpen: false,
+  selectedNFT: "0",
 };
 
 export const commonSlice = createSlice({

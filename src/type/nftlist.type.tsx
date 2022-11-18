@@ -1,7 +1,6 @@
 export interface IListedNFT {
   token_id: string;
   price: number;
-  img: string;
   traits: ITrait[];
 }
 
@@ -13,4 +12,11 @@ export interface ITrait {
 export interface INFTListState {
   allListedNFTs: IListedNFT[];
   getAllListedNFTsLoading: boolean;
+  priceHistory: IPriceHistory[];
+}
+
+export interface IPriceHistory {
+  date: String;
+  price: Number;
+  token_type: String;
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Row, Pagination } from "antd";
 import type { PaginationProps } from "antd";
+import { useDispatch } from "react-redux";
 import { commonState, updateCommonState } from "../reducer/common.reducer";
 import { nftlistState, getAllListedNFTs } from "../reducer/nftlist.reducer";
 import { AppDispatch, AppSelector } from "../store";
@@ -30,7 +30,7 @@ const NFTList: React.FC = () => {
 
   return (
     <>
-      <Row>
+      <Row style={{ padding: "10px" }}>
         <Pagination
           showQuickJumper
           pageSize={pageSize}
@@ -40,7 +40,10 @@ const NFTList: React.FC = () => {
           style={{ float: "right" }}
         />
       </Row>
-      <Row gutter={16} style={{ padding: "10px" }}>
+      <Row
+        gutter={16}
+        style={{ padding: "10px", marginLeft: "0px", marginRight: "0px" }}
+      >
         {allListedNFTs
           .slice(
             pageSize * (pageNumber.valueOf() - 1),

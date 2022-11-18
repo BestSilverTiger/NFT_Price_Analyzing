@@ -1,4 +1,6 @@
 export interface ICommonState {
-  nfttype: string;
+  nfttype: String;
   currentPage: Number;
+  nftModalOpen: Boolean;
+  selectedNFT: String;
 }

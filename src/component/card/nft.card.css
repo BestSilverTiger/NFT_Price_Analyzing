@@ -15,9 +15,13 @@
 }
 
 .nft-id {
+    display: flex;
+    justify-content: space-between;
     padding-bottom: 1px;
 }
 
 .nft-price {
+    display: flex;
+    justify-content: space-between;
     padding-bottom: 1px;
 }

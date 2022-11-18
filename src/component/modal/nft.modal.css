@@ -1,0 +1,7 @@
+.trait-floor-price{
+  display: flex;
+  justify-content: space-between;
+  background: rgb(88 87 87);
+  border-radius: 5px;
+  padding-left: 5px;
+}
