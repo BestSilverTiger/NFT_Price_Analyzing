@@ -3,6 +3,11 @@ import { Col, Row, Card } from "antd";
 import { Line } from "@ant-design/plots";
 import { Button, Radio, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import { AppDispatch, AppSelector } from "../store";
+import { commonState } from "../reducer/common.reducer";
+import CoinGeckoService from "../service/coingecko.service";
+import CoinMarketCapService from "../service/coinmarketcap.service";
+import { nftCollection } from "../config/common.config";
 import Recommend from "./recommend";
 interface User {
   key: number;
@@ -37,11 +42,33 @@ const tableData: User[] = [
 ];
 
 const Statistics: React.FC = () => {
+  const { nfttype } = AppSelector(commonState);
   const [data, setData] = useState([]);
   const [period, setPeriod] = useState("24h");
+  const [floorPrice, setFloorPrice] = useState(0);
+  const [marketcap, setMarketcap] = useState(0);
+  const [volumn24, setVolumn24] = useState(0);
+  const [etherPrice, setEtherPrice] = useState(0);
+
   useEffect(() => {
     asyncFetch();
+    getBalance();
   }, []);
+
+  const getBalance = () => {
+    CoinGeckoService.getCollectionStats(nftCollection[nfttype].nftId)
+      .then((res) => {
+        setFloorPrice(res.data.floor_price.native_currency);
+        setMarketcap(res.data.market_cap.native_currency);
+        setVolumn24(res.data.volume_24h.native_currency);
+      })
+      .catch(() => {});
+    CoinMarketCapService.getEtherPrice()
+      .then((res) => {
+        setEtherPrice(res.data["ETH"]["quote"]["USD"]["price"]);
+      })
+      .catch(() => {});
+  };
 
   const asyncFetch = () => {
     fetch(
@@ -70,14 +97,17 @@ const Statistics: React.FC = () => {
   return (
     <>
       <Row gutter={16}>
-        <Col md={8} sm={12} xs={24} className="mb-10">
-          <Card title="Floor Price">17 ETH</Card>
+        <Col md={6} sm={12} xs={24} className="mb-10">
+          <Card title="Floor Price">{floorPrice} ETH</Card>
         </Col>
-        <Col md={8} sm={12} xs={24} className="mb-10 h-100">
-          <Card title="Market Cap">124874 ETH</Card>
+        <Col md={6} sm={12} xs={24} className="mb-10 h-100">
+          <Card title="Market Cap">{marketcap} ETH</Card>
         </Col>
-        <Col md={8} sm={12} xs={24} className="mb-10 h-100">
-          <Card title="24h Volumn">1132.34 ETH</Card>
+        <Col md={6} sm={12} xs={24} className="mb-10 h-100">
+          <Card title="24h Volumn">{volumn24} ETH</Card>
+        </Col>
+        <Col md={6} sm={12} xs={24} className="mb-10 h-100">
+          <Card title="Ether Price">{Number(etherPrice.toFixed(2))}</Card>
         </Col>
       </Row>
 

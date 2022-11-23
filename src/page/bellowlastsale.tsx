@@ -1,90 +1,75 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Avatar, Divider, List, Skeleton } from "antd";
-import InfiniteScroll from "react-infinite-scroll-component";
+import { Row, Col, Card, Avatar, Divider, List, Skeleton, message } from "antd";
+import VirtualList from "rc-virtual-list";
 
-interface DataType {
-  gender: string;
-  name: {
-    title: string;
-    first: string;
-    last: string;
-  };
-  email: string;
-  picture: {
-    large: string;
-    medium: string;
-    thumbnail: string;
-  };
-  nat: string;
-}
+import { AppDispatch, AppSelector } from "../store";
+import { commonState } from "../reducer/common.reducer";
+
+import { IListedNFT } from "../type";
+import ApiService from "../service/api.service";
+
+const fakeDataUrl =
+  "https://randomuser.me/api/?results=20&inc=name,gender,email,nat,picture&noinfo";
+const ContainerHeight = 400;
+
 const BellowLastSale: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<DataType[]>([]);
+  const { nfttype } = AppSelector(commonState);
+  const [data, setData] = useState<IListedNFT[]>([]);
+  const [page, setPage] = useState(1);
 
-  const loadMoreData = () => {
-    if (loading) {
-      return;
-    }
-    setLoading(true);
-    fetch(
-      "https://randomuser.me/api/?results=10&inc=name,gender,email,nat,picture&noinfo"
-    )
-      .then((res) => res.json())
-      .then((body) => {
-        setData([...data, ...body.results]);
-        setLoading(false);
+  const appendData = () => {
+    setPage(page + 1);
+    ApiService.getListedNFTs(nfttype.toString(), "lastsale", page)
+      .then((res) => {
+        setData([...data, ...res.data.data]);
       })
-      .catch(() => {
-        setLoading(false);
-      });
+      .catch(() => {});
   };
 
   useEffect(() => {
-    loadMoreData();
+    appendData();
   }, []);
+
+  const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
+    if (
+      e.currentTarget.scrollHeight - e.currentTarget.scrollTop ===
+      ContainerHeight
+    ) {
+      appendData();
+    }
+  };
+
   return (
-    <>
-      <Row gutter={16}>
-        <Col span={24}>
-          <Card title="BellowLastSale">
-            <div
-              id="scrollableDiv"
-              style={{
-                height: 400,
-                overflow: "auto",
-                padding: "0 16px",
-                border: "1px solid rgba(140, 140, 140, 0.35)",
-              }}
+    <Row gutter={16}>
+      <Col span={24}>
+        <Card title="Bellow Last Sale">
+          <List>
+            <VirtualList
+              data={data}
+              height={ContainerHeight}
+              itemHeight={47}
+              itemKey="token_id"
+              onScroll={onScroll}
             >
-              <InfiniteScroll
-                dataLength={data.length}
-                next={loadMoreData}
-                hasMore={data.length < 50}
-                loader={<Skeleton avatar paragraph={{ rows: 1 }} active />}
-                endMessage={<Divider plain>It is all, nothing more 🤐</Divider>}
-                scrollableTarget="scrollableDiv"
-              >
-                <List
-                  dataSource={data}
-                  renderItem={(item) => (
-                    <List.Item key={item.email}>
-                      <List.Item.Meta
-                        avatar={<Avatar src={item.picture.large} />}
-                        title={
-                          <a href="https://ant.design">{item.name.last}</a>
-                        }
-                        description={item.email}
+              {(item: IListedNFT) => (
+                <List.Item key={item.token_id.toString()}>
+                  <List.Item.Meta
+                    avatar={
+                      <Avatar
+                        src={`${process.env.PUBLIC_URL}/image/nft/boredapeyc/${item.token_id}.png`}
                       />
-                      <div>Content</div>
-                    </List.Item>
-                  )}
-                />
-              </InfiniteScroll>
-            </div>
-          </Card>
-        </Col>
-      </Row>
-    </>
+                    }
+                    title={<a href="https://ant.design">{item.token_id}</a>}
+                    description={item.token_id}
+                  />
+                  <div>Content</div>
+                </List.Item>
+              )}
+            </VirtualList>
+          </List>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

@@ -50,13 +50,13 @@ let initialState: INFTListState = {
   },
 };
 
-export const getAllListedNFTs = createAsyncThunk(
-  "listednfts",
-  async (nfttype: string) => {
-    const { data } = await ApiService.getListedNFTs(nfttype);
-    return data;
-  }
-);
+// export const getAllListedNFTs = createAsyncThunk(
+//   "listednfts",
+//   async (nfttype: string) => {
+//     const { data } = await ApiService.getListedNFTs(nfttype);
+//     return data;
+//   }
+// );
 
 export const getCollectionStats = createAsyncThunk(
   "stats",
@@ -78,22 +78,22 @@ export const nftlistSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getAllListedNFTs.pending, (state) => {});
-    builder.addCase(getAllListedNFTs.fulfilled, (state, { payload }) => {
-      if (payload.status) {
-        state.allListedNFTs = [];
-        for (let i = 0; i < 10000; i++) {
-          state.allListedNFTs.push({
-            token_id: String(i),
-            price: payload.data[i].price,
-            trait: boredApeMetadata[String(i)],
-            salesHistory: payload.data[i].salesHistory,
-          });
-        }
-      }
-      state.getAllListedNFTsLoading = false;
-    });
-    builder.addCase(getAllListedNFTs.rejected, (state) => {});
+    // builder.addCase(getAllListedNFTs.pending, (state) => {});
+    // builder.addCase(getAllListedNFTs.fulfilled, (state, { payload }) => {
+    //   if (payload.status) {
+    //     state.allListedNFTs = [];
+    //     for (let i = 0; i < payload.data.length; i++) {
+    //       state.allListedNFTs.push({
+    //         token_id: payload.data[i].token_id,
+    //         price: payload.data[i].price,
+    //         trait: boredApeMetadata[payload.data[i].token_id],
+    //         salesHistory: payload.data[i].salesHistory,
+    //       });
+    //     }
+    //   }
+    //   state.getAllListedNFTsLoading = false;
+    // });
+    // builder.addCase(getAllListedNFTs.rejected, (state) => {});
     builder.addCase(getCollectionStats.pending, (state) => {});
     builder.addCase(getCollectionStats.fulfilled, (state, { payload }) => {
       if (payload.status) {

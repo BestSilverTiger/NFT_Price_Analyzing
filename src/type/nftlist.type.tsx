@@ -1,8 +1,8 @@
 export interface IListedNFT {
   token_id: String;
   price: {
-    opensea: ITokenPrice;
-    looksrare: ITokenPrice;
+    opensea: any;
+    looksrare: any;
   };
   trait: ITrait[];
   salesHistory: ITokenPrice[];

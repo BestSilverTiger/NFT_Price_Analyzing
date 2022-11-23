@@ -6,6 +6,6 @@ export const apiConfig = {
   subgraphServer: "",
   openseaServer1: "https://api.opensea.io/api/v1",
   openseaServer2: "https://api.opensea.io/api/v2",
-  coingeckoServer: "https://www.coingecko.com",
+  coingeckoServer: "https://api.coingecko.com/api/v3",
   coinmarketcapServer: "https://pro-api.coinmarketcap.com/v2",
 };

@@ -5,10 +5,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch, AppSelector } from "../store";
 import { commonState } from "../reducer/common.reducer";
 import { updateNftlistState, nftlistState } from "../reducer/nftlist.reducer";
-import {
-  getAllListedNFTs,
-  getCollectionStats,
-} from "../reducer/nftlist.reducer";
+import { getCollectionStats } from "../reducer/nftlist.reducer";
 import { getEtherPrice } from "../reducer/common.reducer";
 
 import NFTModal from "../component/modal/nft.modal";
@@ -25,15 +22,7 @@ const Main: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { nfttype, etherPrice } = AppSelector(commonState);
   const { getAllListedNFTsLoading } = AppSelector(nftlistState);
-  useEffect(() => {
-    dispatch(
-      updateNftlistState({
-        getAllListedNFTsLoading: true,
-      })
-    );
-    dispatch(getEtherPrice());
-    dispatch(getAllListedNFTs(String(nfttype)));
-  });
+  useEffect(() => {});
   return (
     <Layout>
       <Header>{String(etherPrice)}</Header>
