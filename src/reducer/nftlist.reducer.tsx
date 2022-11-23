@@ -1,8 +1,7 @@
 import { createSlice, isAnyOf, createAsyncThunk } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "../store";
+import { RootState, store } from "../store";
 import { INFTListState, IListedNFT, ITrait } from "../type";
-import { commonState } from "./common.reducer";
 import ApiService from "../service/api.service";
 import boredApeMetadata from "../constant/metadata/boredapeyc.json";
 import { traits } from "../config/common.config";
@@ -10,7 +9,45 @@ import { traits } from "../config/common.config";
 let initialState: INFTListState = {
   allListedNFTs: [],
   getAllListedNFTsLoading: false,
-  priceHistory: [],
+  collectionStats: {
+    one_hour_volume: 0,
+    one_hour_change: 0,
+    one_hour_sales: 0,
+    one_hour_sales_change: 0,
+    one_hour_average_price: 0,
+    one_hour_difference: 0,
+    six_hour_volume: 0,
+    six_hour_change: 0,
+    six_hour_sales: 0,
+    six_hour_sales_change: 0,
+    six_hour_average_price: 0,
+    six_hour_difference: 0,
+    one_day_volume: 0,
+    one_day_change: 0,
+    one_day_sales: 0,
+    one_day_sales_change: 0,
+    one_day_average_price: 0,
+    one_day_difference: 0,
+    seven_day_volume: 0,
+    seven_day_change: 0,
+    seven_day_sales: 0,
+    seven_day_average_price: 0,
+    seven_day_difference: 0,
+    thirty_day_volume: 0,
+    thirty_day_change: 0,
+    thirty_day_sales: 0,
+    thirty_day_average_price: 0,
+    thirty_day_difference: 0,
+    total_volume: 0,
+    total_sales: 0,
+    total_supply: 0,
+    count: 0,
+    num_owners: 0,
+    average_price: 0,
+    num_reports: 0,
+    market_cap: 0,
+    floor_price: 0,
+  },
 };
 
 export const getAllListedNFTs = createAsyncThunk(
@@ -21,11 +58,10 @@ export const getAllListedNFTs = createAsyncThunk(
   }
 );
 
-export const getSaleHistory = createAsyncThunk(
-  "getSalehistory",
-  async ({ token_id, nfttype }: { token_id: string; nfttype: string }) => {
-    console.log(token_id);
-    const { data } = await ApiService.getSaleHistory(token_id, nfttype);
+export const getCollectionStats = createAsyncThunk(
+  "stats",
+  async ({ nfttype }: { nfttype: string }) => {
+    const { data } = await ApiService.getCollectionStats(nfttype);
     return data;
   }
 );
@@ -45,44 +81,30 @@ export const nftlistSlice = createSlice({
     builder.addCase(getAllListedNFTs.pending, (state) => {});
     builder.addCase(getAllListedNFTs.fulfilled, (state, { payload }) => {
       if (payload.status) {
-        const allListedNFTsRes = payload.data;
         state.allListedNFTs = [];
-        for (let i = 0; i < allListedNFTsRes.length; i++) {
-          const token_id = allListedNFTsRes[i].token_id;
-          const price = allListedNFTsRes[i].price;
-          if (price < 1 / 10 ** 5) {
-            continue;
-          }
-          //   @ts-ignore
-          let trait_list = traits[state.nfttype];
-          //   @ts-ignore
-          const token_traits = boredApeMetadata[token_id];
-          let token_traits_temp = [];
-          for (let j = 0; j < token_traits.length; j++) {
-            let type = token_traits[j].trait_type;
-            let value = token_traits[j].value.toLowerCase();
-            token_traits_temp.push({
-              type: type,
-              value: token_traits[j].value,
-            });
-          }
+        for (let i = 0; i < 10000; i++) {
           state.allListedNFTs.push({
-            token_id: token_id,
-            price: price,
-            traits: token_traits_temp,
+            token_id: String(i),
+            price: payload.data[i].price,
+            trait: boredApeMetadata[String(i)],
+            salesHistory: payload.data[i].salesHistory,
           });
         }
       }
+      state.getAllListedNFTsLoading = false;
     });
     builder.addCase(getAllListedNFTs.rejected, (state) => {});
-    builder.addCase(getSaleHistory.pending, (state) => {});
-    builder.addCase(getSaleHistory.fulfilled, (state, { payload }) => {
+    builder.addCase(getCollectionStats.pending, (state) => {});
+    builder.addCase(getCollectionStats.fulfilled, (state, { payload }) => {
       if (payload.status) {
-        state.priceHistory = payload.data;
-        console.log(payload.data);
+        const res = payload.data;
+        state.collectionStats.floor_price = Math.min(
+          res.opensea.floor_price,
+          res.looksrare.floorPrice
+        );
       }
     });
-    builder.addCase(getSaleHistory.rejected, (state) => {});
+    builder.addCase(getCollectionStats.rejected, (state) => {});
   },
 });
 

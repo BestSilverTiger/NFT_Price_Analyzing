@@ -26,7 +26,7 @@ const { Meta } = Card;
 const NFTModal: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const { nftModalOpen, selectedNFT } = AppSelector(commonState);
-  const { allListedNFTs, priceHistory } = AppSelector(nftlistState);
+  const { allListedNFTs } = AppSelector(nftlistState);
   const { nfttype } = AppSelector(commonState);
 
   const [openseaPrice, setOpenseaPrice] = useState(0);
@@ -34,7 +34,7 @@ const NFTModal: React.FC = () => {
   const [highestPrice, setHighestPrice] = useState(0);
 
   const chartConfig = {
-    data: priceHistory,
+    data: [],
     xField: "date",
     yField: "price",
     label: {},
@@ -66,81 +66,7 @@ const NFTModal: React.FC = () => {
     ],
   };
 
-  useEffect(() => {
-    let floorPricesTemp: any = [];
-    let nftTemp = allListedNFTs.filter((nft) => {
-      return nft.token_id == selectedNFT;
-    });
-    if (nftTemp.length == 0) {
-      return;
-    }
-    let token_traits = nftTemp[0].traits;
-    setOpenseaPrice(nftTemp[0].price);
-    // @ts-ignore
-    let trait_temp = traits[nfttype];
-    let highestPriceTemp = 0;
-    token_traits.forEach((trait) => {
-      let type = trait.type;
-      let value = trait.value;
-      let nftListTemp = allListedNFTs.filter((nft) => {
-        let traits_temp = nft.traits.filter((trait) => {
-          return trait.type === type && trait.value === value;
-        });
-        return traits_temp.length == 1;
-      });
-      const floor = Math.min.apply(
-        Math,
-        nftListTemp.map((nfttemp) => {
-          return nfttemp.price;
-        })
-      );
-      if (highestPriceTemp < floor) {
-        highestPriceTemp = floor;
-      }
-      floorPricesTemp.push({
-        type: type,
-        value: value,
-        price: floor,
-      });
-      trait_temp = trait_temp.filter((trait: String) => {
-        return trait !== type;
-      });
-    });
-
-    trait_temp.forEach((trait: String) => {
-      let nftListTemp: any = [];
-      if (trait == "Count") {
-        nftListTemp = allListedNFTs.filter((nftTemp) => {
-          return nftTemp.traits.length == token_traits.length;
-        });
-      } else {
-        nftListTemp = allListedNFTs.filter((nftTemp) => {
-          let traits_temp = nftTemp.traits.filter((trait) => {
-            return trait.type === String(trait);
-          });
-          return traits_temp.length == 0;
-        });
-      }
-
-      const floor = Math.min.apply(
-        Math,
-        nftListTemp.map((nfttemp: any) => {
-          return nfttemp.price;
-        })
-      );
-      let value = trait == "Count" ? token_traits.length.toString() : "none";
-      floorPricesTemp.push({
-        type: trait,
-        value: value,
-        price: floor,
-      });
-      if (highestPriceTemp < floor) {
-        highestPriceTemp = floor;
-      }
-    });
-    setFloorPrices(floorPricesTemp);
-    setHighestPrice(highestPriceTemp);
-  }, [selectedNFT]);
+  useEffect(() => {}, [selectedNFT]);
 
   const handleClose = () => {
     dispatch(
@@ -156,7 +82,7 @@ const NFTModal: React.FC = () => {
       footer={null}
       width={800}
     >
-      <Row gutter={8}>
+      <Row gutter={20}>
         <Col className="gutter-row" span={10}>
           <Card
             style={{ width: "100%", borderRadius: "10px" }}
@@ -184,7 +110,8 @@ const NFTModal: React.FC = () => {
           </Card>
         </Col>
         <Col className="gutter-row" span={14}>
-          <Row style={{ width: "100%", height: "200px", marginBottom: "15px" }}>
+          <Row style={{ width: "100%", height: "200px", marginBottom: "35px" }}>
+            <Title level={5}>Price History</Title>
             <Line autoFit={true} {...chartConfig} />
           </Row>
           <Row gutter={4}>
