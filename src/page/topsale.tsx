@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Row, Col, Card, Avatar, Divider, List, Skeleton, message } from "antd";
 import VirtualList from "rc-virtual-list";
-
+import { useDispatch } from "react-redux";
 import { AppDispatch, AppSelector } from "../store";
-import { commonState } from "../reducer/common.reducer";
+import { commonState, updateCommonState } from "../reducer/common.reducer";
 
 import { IListedNFT } from "../type";
 import ApiService from "../service/api.service";
@@ -13,6 +13,7 @@ const fakeDataUrl =
 const ContainerHeight = 400;
 
 const TopSale: React.FC = () => {
+  const dispatch: AppDispatch = useDispatch();
   const { nfttype } = AppSelector(commonState);
   const [data, setData] = useState<IListedNFT[]>([]);
   const [page, setPage] = useState(1);
@@ -39,6 +40,15 @@ const TopSale: React.FC = () => {
     }
   };
 
+  const handleTokenClick = (token_id: string) => {
+    dispatch(
+      updateCommonState({
+        selectedNFT: token_id,
+        nftModalOpen: true,
+      })
+    );
+  };
+
   return (
     <Row gutter={16}>
       <Col span={24}>
@@ -52,7 +62,11 @@ const TopSale: React.FC = () => {
               onScroll={onScroll}
             >
               {(item: IListedNFT) => (
-                <List.Item key={item.token_id.toString()}>
+                <List.Item
+                  key={item.token_id.toString()}
+                  onClick={() => handleTokenClick(item.token_id.toString())}
+                  style={{ cursor: "pointer" }}
+                >
                   <List.Item.Meta
                     avatar={
                       <Avatar
@@ -60,9 +74,8 @@ const TopSale: React.FC = () => {
                       />
                     }
                     title={<a href="https://ant.design">{item.token_id}</a>}
-                    description={item.token_id}
                   />
-                  <div>Content</div>
+                  <div>{item.sale_history.length}</div>
                 </List.Item>
               )}
             </VirtualList>

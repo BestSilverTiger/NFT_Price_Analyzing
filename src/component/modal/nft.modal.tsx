@@ -15,27 +15,32 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { commonState, updateCommonState } from "../../reducer/common.reducer";
 import { AppDispatch, AppSelector } from "../../store";
-import { nftlistState } from "../../reducer/nftlist.reducer";
-import { IListedNFT } from "../../type";
-import { traits } from "../../config/common.config";
+import ApiService from "../../service/api.service";
+import { IListedNFT2 } from "../../type";
 import "./nft.modal.css";
+import { IOrder, ITrait1 } from "../../type/nftlist.type";
 
 const { Title, Text } = Typography;
 const { Meta } = Card;
 
 const NFTModal: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { nftModalOpen, selectedNFT } = AppSelector(commonState);
-  const { allListedNFTs } = AppSelector(nftlistState);
-  const { nfttype } = AppSelector(commonState);
+  const { nftModalOpen, nfttype } = AppSelector(commonState);
+  const { selectedNFT } = AppSelector(commonState);
 
-  const [openseaPrice, setOpenseaPrice] = useState(0);
-  const [floorPrices, setFloorPrices] = useState([]);
-  const [highestPrice, setHighestPrice] = useState(0);
-
+  const [tokenPrice, setTokenPrice] = useState(0);
+  const [tokenType, setTokenType] = useState("ETH");
+  const [tokenData, setTokenData] = useState<IListedNFT2>({
+    collection_name: "boredapeyc",
+    token_id: "0",
+    order: [],
+    sale_history: [],
+    traits: [],
+  });
+  const [chartData, setChartData] = useState<IOrder[]>([]);
   const chartConfig = {
-    data: [],
-    xField: "date",
+    data: chartData,
+    xField: "created_date",
     yField: "price",
     label: {},
     point: {
@@ -66,8 +71,24 @@ const NFTModal: React.FC = () => {
     ],
   };
 
-  useEffect(() => {}, [selectedNFT]);
+  useEffect(() => {
+    getBalance();
+  }, [selectedNFT]);
 
+  const getBalance = async () => {
+    const res = await ApiService.getTokenById(
+      nfttype.toString(),
+      selectedNFT.toString()
+    );
+    setTokenData(res.data.data);
+    if (tokenData.order.length != 0) {
+      setTokenPrice(Number(tokenData.order[0].price));
+      setTokenType(tokenData.order[0].payment_token.toString());
+    }
+    if (tokenData.sale_history.length != 0) {
+      setChartData(tokenData.sale_history);
+    }
+  };
   const handleClose = () => {
     dispatch(
       updateCommonState({
@@ -105,7 +126,7 @@ const NFTModal: React.FC = () => {
                 />
               }
               title={`#${selectedNFT}`}
-              description={`${openseaPrice} ETH`}
+              description={`${tokenPrice} ${tokenType}`}
             />
           </Card>
         </Col>
@@ -115,11 +136,11 @@ const NFTModal: React.FC = () => {
             <Line autoFit={true} {...chartConfig} />
           </Row>
           <Row gutter={4}>
-            {floorPrices.map((floor: any) => (
+            {tokenData.traits.map((floor: ITrait1) => (
               <Col span={12}>
-                <Text strong>{floor.type}</Text>
+                <Text strong>{floor.trait_type}</Text>
                 <div className="trait-floor-price">
-                  <Text>{floor.value}</Text>
+                  <Text>{floor.trait_value}</Text>
                   <Tag
                     style={{
                       width: "50px",
@@ -131,7 +152,7 @@ const NFTModal: React.FC = () => {
                       fontWeight: "bold",
                     }}
                   >
-                    {Number(floor.price.toFixed(3))}
+                    {Number(floor.floor_price.toFixed(3))}
                   </Tag>
                 </div>
               </Col>

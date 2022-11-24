@@ -8,4 +8,5 @@ export const apiConfig = {
   openseaServer2: "https://api.opensea.io/api/v2",
   coingeckoServer: "https://api.coingecko.com/api/v3",
   coinmarketcapServer: "https://pro-api.coinmarketcap.com/v2",
+  looksrareServer: "https://api.looksrare.org/api/v1",
 };

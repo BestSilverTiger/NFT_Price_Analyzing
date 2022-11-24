@@ -9,41 +9,15 @@ import CoinGeckoService from "../service/coingecko.service";
 import CoinMarketCapService from "../service/coinmarketcap.service";
 import { nftCollection } from "../config/common.config";
 import Recommend from "./recommend";
-interface User {
-  key: number;
-  name: string;
-  price: string;
+
+interface ChartDataType {
+  date: String;
+  price: Number;
 }
-
-const columns: ColumnsType<User> = [
-  {
-    key: "name",
-    title: "Name",
-    dataIndex: "name",
-  },
-  {
-    key: "price",
-    title: "Price",
-    dataIndex: "price",
-  },
-];
-
-const tableData: User[] = [
-  {
-    key: 0,
-    name: "Jack",
-    price: "60 ETH",
-  },
-  {
-    key: 1,
-    name: "John",
-    price: "60 ETH",
-  },
-];
 
 const Statistics: React.FC = () => {
   const { nfttype } = AppSelector(commonState);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<ChartDataType[]>([]);
   const [period, setPeriod] = useState("24h");
   const [floorPrice, setFloorPrice] = useState(0);
   const [marketcap, setMarketcap] = useState(0);
@@ -51,9 +25,29 @@ const Statistics: React.FC = () => {
   const [etherPrice, setEtherPrice] = useState(0);
 
   useEffect(() => {
-    asyncFetch();
+    getChartData();
     getBalance();
   }, []);
+
+  useEffect(() => {
+    getChartData();
+  }, [period]);
+
+  const getChartData = () => {
+    let src = require(`../constant/floorprice/${period}.json`);
+    let temp: ChartDataType[] = [];
+    src.forEach((item) => {
+      temp.push({
+        date:
+          period == "24h"
+            ? new Date(item[0]).toLocaleTimeString()
+            : new Date(item[0]).toLocaleDateString() +
+              new Date(item[0]).toLocaleTimeString(),
+        price: item[1],
+      });
+    });
+    setData(temp);
+  };
 
   const getBalance = () => {
     CoinGeckoService.getCollectionStats(nftCollection[nfttype].nftId)
@@ -82,17 +76,20 @@ const Statistics: React.FC = () => {
   };
   const config = {
     data,
-    xField: "year",
-    yField: "value",
-    seriesField: "category",
+    xField: "date",
+    yField: "price",
+    color: "#a8ddb5",
+    xAxis: {
+      tickCount: 10,
+    },
     yAxis: {
+      min: Math.min(...data.map((item) => Number(item.price))) - 1,
+      max: Math.max(...data.map((item) => Number(item.price))) + 1,
       label: {
-        // 数值格式化为千分位
         formatter: (v) =>
           `${v}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`),
       },
     },
-    color: ["#1979C9", "#D62A0D", "#FAA219"],
   };
   return (
     <>
@@ -121,16 +118,28 @@ const Statistics: React.FC = () => {
               value={period}
               onChange={(e) => setPeriod(e.target.value)}
             >
-              <Radio.Button value="24h">24h</Radio.Button>
-              <Radio.Button value="7d">7d</Radio.Button>
-              <Radio.Button value="14d">14d</Radio.Button>
-              <Radio.Button value="30d">30d</Radio.Button>
-              <Radio.Button value="90d">90d</Radio.Button>
-              <Radio.Button value="Max">Max</Radio.Button>
+              <Radio.Button value="24h" onClick={() => setPeriod("24h")}>
+                24h
+              </Radio.Button>
+              <Radio.Button value="7d" onClick={() => setPeriod("7d")}>
+                7d
+              </Radio.Button>
+              <Radio.Button value="14d" onClick={() => setPeriod("14d")}>
+                14d
+              </Radio.Button>
+              <Radio.Button value="30d" onClick={() => setPeriod("30d")}>
+                30d
+              </Radio.Button>
+              <Radio.Button value="90d" onClick={() => setPeriod("90d")}>
+                90d
+              </Radio.Button>
+              <Radio.Button value="all" onClick={() => setPeriod("all")}>
+                Max
+              </Radio.Button>
             </Radio.Group>
           </Space>
           <Card style={{ height: "470px" }}>
-            <Line {...config} />
+            <Line autoFit={true} {...config} />
           </Card>
         </Col>
         <Col lg={8} md={12} sm={24} className="mb-10">

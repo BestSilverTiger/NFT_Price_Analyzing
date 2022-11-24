@@ -1,75 +1,49 @@
 export interface IListedNFT {
+  collection_name: String;
   token_id: String;
-  price: {
-    opensea: any;
-    looksrare: any;
-  };
-  trait: ITrait[];
-  salesHistory: ITokenPrice[];
+  order: IOrder[];
+  traits: ITrait[];
+  sale_history: IOrder[];
 }
 
-export interface ITokenPrice {
+export interface IListedNFT2 {
+  collection_name: String;
+  token_id: String;
+  order: IOrder[];
+  traits: ITrait1[];
+  sale_history: IOrder[];
+}
+
+export interface IListedNFT1 {
+  collection_name: String;
+  token_id: String;
+  order: IOrder[];
+  traits: ITrait[];
+  sale_history: IOrder[];
+  floor_price: Number;
+  floor_price_token: String;
+  floor_price_token_price: Number;
+}
+
+export interface IOrder {
   price: Number;
-  created_date: String;
+  created_date: Date;
+  marketplace: String;
   payment_token: String;
   payment_token_price: Number;
 }
 
-export interface ISaleHistory {
-  price: Number;
-  marketplace: String;
-  date: String;
-  token_type: String;
-  token_price: Number;
+export interface ITrait {
+  trait_type: String;
+  trait_value: String;
 }
 
-export interface ITrait {
-  type: String;
-  value: String;
+export interface ITrait1 {
+  trait_type: String;
+  trait_value: String;
+  floor_price: Number;
 }
 
 export interface INFTListState {
-  allListedNFTs: IListedNFT[];
-  getAllListedNFTsLoading: boolean;
-  collectionStats: ICollectionStats;
-}
-
-export interface ICollectionStats {
-  one_hour_volume: Number;
-  one_hour_change: Number;
-  one_hour_sales: Number;
-  one_hour_sales_change: Number;
-  one_hour_average_price: Number;
-  one_hour_difference: Number;
-  six_hour_volume: Number;
-  six_hour_change: Number;
-  six_hour_sales: Number;
-  six_hour_sales_change: Number;
-  six_hour_average_price: Number;
-  six_hour_difference: Number;
-  one_day_volume: Number;
-  one_day_change: Number;
-  one_day_sales: Number;
-  one_day_sales_change: Number;
-  one_day_average_price: Number;
-  one_day_difference: Number;
-  seven_day_volume: Number;
-  seven_day_change: Number;
-  seven_day_sales: Number;
-  seven_day_average_price: Number;
-  seven_day_difference: Number;
-  thirty_day_volume: Number;
-  thirty_day_change: Number;
-  thirty_day_sales: Number;
-  thirty_day_average_price: Number;
-  thirty_day_difference: Number;
-  total_volume: Number;
-  total_sales: Number;
-  total_supply: Number;
-  count: Number;
-  num_owners: Number;
-  average_price: Number;
-  num_reports: Number;
-  market_cap: Number;
-  floor_price: Number;
+  selectedNFT: Number;
 }
